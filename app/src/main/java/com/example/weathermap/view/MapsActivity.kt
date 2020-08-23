@@ -1,8 +1,10 @@
-package com.example.weathermap
+package com.example.weathermap.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import com.example.weathermap.viewmodel.MapsViewModel
+import com.example.weathermap.R
 import com.example.weathermap.databinding.ActivityMapsBinding
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -16,11 +18,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
 
+    val viewModel = MapsViewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_maps)
 
-        val binding: ActivityMapsBinding = DataBindingUtil.setContentView(this, R.layout.activity_maps)
+        val binding: ActivityMapsBinding = DataBindingUtil.setContentView(this,
+            R.layout.activity_maps
+        )
         binding.vm = MapsViewModel()
         binding.lifecycleOwner = this
 
@@ -48,10 +54,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
 
         mMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
-
+            /**
+             * mapをタップされた場所を取得
+             */
             override fun onMapClick(latlng :LatLng) {
-                val location = LatLng(latlng.latitude,latlng.longitude)
-                mMap.addMarker(MarkerOptions().position(location))
+
+                //VMクラスへ渡す（いずれ自動化したい）
+                viewModel.setMapClickPos(latlng)
+
+                //val location = LatLng(latlng.latitude,latlng.longitude)
+                //mMap.addMarker(MarkerOptions().position(location))
             }
         })
     }

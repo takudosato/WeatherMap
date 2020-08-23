@@ -5,7 +5,7 @@
     <data>
         <variable
             name="vm"
-            type="com.example.weathermap.MapsViewModel" />
+            type="com.example.weathermap.viewmodel.MapsViewModel" />
     </data>
 
     <FrameLayout
@@ -18,7 +18,7 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".MapsActivity" />
+            tools:context=".view.MapsActivity" />
 
         <Button
             android:id="@+id/button"
