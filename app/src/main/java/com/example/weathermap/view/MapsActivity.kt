@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import com.example.weathermap.viewmodel.MapsViewModel
 import com.example.weathermap.R
 import com.example.weathermap.databinding.ActivityMapsBinding
+import com.example.weathermap.model.Repository
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -27,7 +28,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val binding: ActivityMapsBinding = DataBindingUtil.setContentView(this,
             R.layout.activity_maps
         )
-        binding.vm = MapsViewModel()
+        binding.vm = viewModel
         binding.lifecycleOwner = this
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.

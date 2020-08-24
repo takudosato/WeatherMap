@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
 
 android {
     compileSdkVersion 30
@@ -30,6 +32,15 @@ android {
         // for view binding:
         // viewBinding = true
     }
+
+    // Invoke-customs are only supported starting with Android O (--min-api 26) に対応
+    // https://kuxumarin.hatenablog.com/entry/2018/10/24/200000
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+
 }
 
 dependencies {
@@ -45,8 +56,13 @@ dependencies {
 
     def lifecycle_version = "2.2.0"
 
-
-
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+
+    //kapt("groupId:artifactId:1.4.0")
+
+    //retrofit2
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
 }
