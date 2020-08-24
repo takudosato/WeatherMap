@@ -3,6 +3,7 @@ package com.example.weathermap.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weathermap.data.WeatherData
 import com.example.weathermap.model.Repository
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +16,7 @@ class MapsViewModel(
     private val loginRepository: Repository
 ): ViewModel() {
 
-    var weatherStatus: Int = 0
-   // val repository = Repository()
+    var weatherStatus = WeatherData()
 
     fun click() {
         Log.d("test", "clicked")
@@ -31,7 +31,11 @@ class MapsViewModel(
 
         //Repositoryクラスの処理を、コルーチンで実行
         viewModelScope.launch(Dispatchers.IO) {
-            weatherStatus = loginRepository.getWeather(latlng)
+            val wetherdata = loginRepository.getWeather(latlng)
+            //データが空（取得に失敗）でなければ、パラメータに反映する
+            if (wetherdata != WeatherData()) {
+                weatherStatus = wetherdata
+            }
         }
     }
 }

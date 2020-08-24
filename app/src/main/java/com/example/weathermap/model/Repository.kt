@@ -1,6 +1,7 @@
 package com.example.weathermap.model
 
 import android.util.Log
+import com.example.weathermap.data.WeatherData
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 import org.json.JSONArray
@@ -78,67 +79,19 @@ class Repository {
 
     }
 
-
-    fun getWeather(latlng : LatLng) : Int {
+    /**
+     * 指定した緯度経度の天気情報を返す
+     *
+     * @param latlng
+     * @return
+     */
+    fun getWeather(latlng : LatLng) : WeatherData {
         Log.d("getWeather", "1 " + latlng.latitude.toString())
         Log.d("getWeather", "2 " + latlng.longitude.toString())
 
-        //都市ID
-        //val id = params[0]
-
-        //val urlStr = "https://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=3fb52c0587b90eec598d728ba7484f8a"
-
-        val urlStr = "https://api.openweathermap.org/data/2.5/weather?lat=" + latlng.latitude.toString() + "&lon=" + latlng.longitude.toString() + "&appid=3fb52c0587b90eec598d728ba7484f8a"
-
-        val url = URL(urlStr)
-        val con =url.openConnection() as HttpURLConnection
-        con.requestMethod = "GET"
-
-        con.connect()
-
-        val stream = con.inputStream
-
-        val result = is2String(stream)
-
-        val rootJSON = JSONObject(result)
-        val weatherData = rootJSON.getString("weather")
-        Log.i("天気情報", weatherData)
-
-        val arrayJson = JSONArray(weatherData)
-
-        var main: String = ""
-        var description: String = ""
-
-        val num = arrayJson.length()
-
-        // for(i in 0..num)
-        //{
-        val weatherPart = arrayJson.getJSONObject(0)
-        main = weatherPart.getString("main")
-        description = weatherPart.getString("description")
-        //}
-
-        Log.i("天気", main)
-        Log.i("天気2", description)
-
-
-
-        return 1
+        val owmap = OpenWeatherMapAccess()
+        return owmap.getWeatherInfobyLatLng(latlng)
     }
 
-    private fun is2String(stream: InputStream): String{
-        val sb = StringBuilder()
 
-        val reader = BufferedReader(InputStreamReader(stream, "UTF-8"))
-        var line = reader.readLine()
-        while(line != null) {
-            sb.append(line)
-            line = reader.readLine()
-        }
-
-        reader.close()
-
-        return sb.toString()
-
-    }
 }

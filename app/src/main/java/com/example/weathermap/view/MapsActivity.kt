@@ -1,19 +1,18 @@
 package com.example.weathermap.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.example.weathermap.viewmodel.MapsViewModel
 import com.example.weathermap.R
 import com.example.weathermap.databinding.ActivityMapsBinding
 import com.example.weathermap.model.Repository
-
+import com.example.weathermap.viewmodel.MapsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -62,6 +61,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 //VMクラスへ渡す（いずれ自動化したい）
                 viewModel.setMapClickPos(latlng)
+
+                //アイコンを表示する
+                val descriptor =
+                    BitmapDescriptorFactory.fromResource(R.drawable.hare)
+
+                val options = GroundOverlayOptions()
+                options.image(descriptor)
+
+                options.position(latlng, 300f)
+
+
+//地図に貼り付けます
+                val overlay: GroundOverlay = mMap.addGroundOverlay(options)
+
+//画像のアルファ値を設定、0で不透明。
+
+//画像のアルファ値を設定、0で不透明。
+                overlay.transparency = 0.3f
 
                 //val location = LatLng(latlng.latitude,latlng.longitude)
                 //mMap.addMarker(MarkerOptions().position(location))
