@@ -2,16 +2,21 @@ package com.example.weathermap.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.weathermap.model.Repository
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MapsViewModel: ViewModel() {
+class MapsViewModel(
+    private val loginRepository: Repository
+): ViewModel() {
 
     var weatherStatus: Int = 0
-    val repository = Repository()
+   // val repository = Repository()
 
     fun click() {
         Log.d("test", "clicked")
@@ -24,6 +29,9 @@ class MapsViewModel: ViewModel() {
         Log.d("latitude", latlng.latitude.toString())
         Log.d("longitude", latlng.longitude.toString())
 
-        weatherStatus = repository.getWeather(latlng)
+        //Repositoryクラスの処理を、コルーチンで実行
+        viewModelScope.launch(Dispatchers.IO) {
+            weatherStatus = loginRepository.getWeather(latlng)
+        }
     }
 }
