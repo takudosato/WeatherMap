@@ -40,7 +40,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
@@ -59,10 +61,15 @@ dependencies {
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
-    //kapt("groupId:artifactId:1.4.0")
+    def activity_version = "1.1.0"
+    // Kotlin
+    implementation "androidx.activity:activity-ktx:$activity_version"
 
-    //retrofit2
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-
+    // Koin for Kotlin apps
+    // 参考になったサイト
+    // https://dev.classmethod.jp/articles/koin_di_exercise/
+    def koin_version = "2.1.6"
+    implementation "org.koin:koin-core:$koin_version"
+    // Testing
+    testImplementation "org.koin:koin-test:$koin_version"
 }

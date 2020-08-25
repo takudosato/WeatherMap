@@ -77,7 +77,7 @@ class OpenWeatherMapAccess {
 
             //weather
             val weatherData = rootJSON.getString("weather")
-            var arrayJson = JSONArray(weatherData)
+            val arrayJson = JSONArray(weatherData)
             //val num = arrayJson.length()
             val weatherPart = arrayJson.getJSONObject(0)
             val main = weatherPart.getString("main")

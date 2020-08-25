@@ -1,6 +1,7 @@
 package com.example.weathermap.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weathermap.data.WeatherData
@@ -8,18 +9,17 @@ import com.example.weathermap.model.Repository
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MapsViewModel(
-    private val loginRepository: Repository
-): ViewModel() {
+class MapsViewModel( private val loginRepository: Repository): ViewModel() {
 
-    var weatherStatus = WeatherData()
+    // Create a LiveData with a String
+    val currentName: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
 
-    fun click() {
-        Log.d("test", "clicked")
+    val weatherStatus: MutableLiveData<WeatherData> by lazy {
+        MutableLiveData<WeatherData>()
     }
 
     /**
@@ -34,8 +34,12 @@ class MapsViewModel(
             val wetherdata = loginRepository.getWeather(latlng)
             //データが空（取得に失敗）でなければ、パラメータに反映する
             if (wetherdata != WeatherData()) {
-                weatherStatus = wetherdata
+                weatherStatus.postValue(wetherdata)
             }
         }
+    }
+
+    operator fun invoke(function: () -> MapsViewModel) {
+
     }
 }
