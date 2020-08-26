@@ -48,7 +48,9 @@
                 android:id="@+id/input_sarch"
                 android:background="@null"
                 android:hint="都市名や住所を入力してください"
-                android:imeOptions="actionSearch"/>
+                android:imeOptions="actionSearch"
+                android:text="@={vm.searchPlaceString}"
+                android:onEditorActionListener="@{vm.editorActionListener}"/>
                 <!-- android:text="@={vm.serchPlaceString}" -->
 
 

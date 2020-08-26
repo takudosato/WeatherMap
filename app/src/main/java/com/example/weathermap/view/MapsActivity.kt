@@ -39,44 +39,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mSearchText: EditText
 
-    private fun init() {
-        Log.d("MapsActivity", "init: initializing")
-
-        mSearchText.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-
-            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                actionId == EditorInfo.IME_ACTION_DONE ||
-                event.action == KeyEvent.ACTION_DOWN ||
-                event.action == KeyEvent.KEYCODE_ENTER) {
-
-                //文字列化実行
-                geoLocate()
-            }
-
-            false
-        })
-    }
-
-    fun geoLocate() {
-        Log.d("MapActivity", "geoLocate")
-
-        val serchString = mSearchText.text.toString()
-
-        val geocoder = Geocoder(this, Locale.getDefault())
-
-
-        val list = geocoder.getFromLocationName(serchString, 1)
-        if (list.isNotEmpty() && list.size > 0) {
-            val address = list.get(0)
-            Log.d("geoLocate", "address: " + address.toString())
-        }
-
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_maps)
-
 
         //DataBindingの設定
         val binding: ActivityMapsBinding = DataBindingUtil.setContentView(this,
@@ -122,8 +87,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        //GEO入力用
-        init()
     }
 
 
@@ -142,6 +105,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mMap.setMinZoomPreference(4.0f)
         mMap.setMaxZoomPreference(10.0f)
+
+        viewModel.geocoder = Geocoder(this, Locale.getDefault())
 
         mMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
             /**
