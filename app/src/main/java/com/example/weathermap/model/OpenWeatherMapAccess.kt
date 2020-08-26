@@ -32,8 +32,12 @@ class OpenWeatherMapAccess {
         val result = is2String(stream)
 
         //JSONのパース
-        val watherData = jsonPerse(result)
-        return watherData
+        val weatherData = jsonPerse(result)
+
+        //LatLng情報を追加
+        weatherData.latlng = latlng
+
+        return weatherData
     }
 
     /**
@@ -92,7 +96,7 @@ class OpenWeatherMapAccess {
             Log.i("天気", main)
             Log.i("天気2", description)
 
-            return WeatherData(main, description, icon, country, name)
+            return WeatherData(LatLng(0.0,0.0), main, description, icon, country, name)
 
         } catch (e: JSONException) {
             e.printStackTrace()

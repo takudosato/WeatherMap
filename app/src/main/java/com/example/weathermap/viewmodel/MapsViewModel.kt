@@ -13,10 +13,7 @@ import kotlinx.coroutines.launch
 
 class MapsViewModel( private val loginRepository: Repository): ViewModel() {
 
-    // Create a LiveData with a String
-    val currentName: MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
-    }
+    //lateinit var serchPlaceString: String
 
     val weatherStatus: MutableLiveData<WeatherData> by lazy {
         MutableLiveData<WeatherData>()
