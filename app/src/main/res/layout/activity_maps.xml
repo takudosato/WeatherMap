@@ -39,18 +39,20 @@
                 android:src="@drawable/ic_magnify"/>
 
             <EditText
+                android:id="@+id/input_sarch"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_toRightOf="@+id/ic_magnity"
                 android:layout_centerVertical="true"
-                android:textSize="15sp"
-                android:textColor="#000"
-                android:id="@+id/input_sarch"
+                android:layout_toRightOf="@+id/ic_magnity"
                 android:background="@null"
                 android:hint="都市名や住所を入力してください"
                 android:imeOptions="actionSearch"
+                android:onEditorActionListener="@{vm.editorActionListener}"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
                 android:text="@={vm.searchPlaceString}"
-                android:onEditorActionListener="@{vm.editorActionListener}"/>
+                android:textColor="#000"
+                android:textSize="15sp" />
                 <!-- android:text="@={vm.serchPlaceString}" -->
 
 

@@ -37,6 +37,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //private val ahoaho: MapsViewModel by viewModels<MapsViewModel>()
     val viewModel = MapsViewModel(Repository())
 
+    lateinit private var marker: WeatherMarker
+
     private lateinit var mSearchText: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,36 +52,42 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.vm = viewModel
         binding.lifecycleOwner = this
 
-        //地図上のマーカー
-        var markeropt: Marker? = null
-
         //検索文字列入力
         mSearchText = findViewById<EditText>(R.id.input_sarch)
 
 
-        val weatherObser = Observer<WeatherData> { newWeatherData ->
+        val weatherObserve = Observer<WeatherData> { newWeatherData ->
             // Update the UI, in this case, a TextView.
             Log.d("weatherObser", newWeatherData.cityname)
-
-            //マーカーを表示する
-            markeropt?.remove()
-
-            markeropt = mMap.addMarker(
-                MarkerOptions()
-                    .position(newWeatherData.latlng)
-                    .title("test")
-                    .snippet("testtest")
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.hare))
-            )
 
             val cu = CameraUpdateFactory.newLatLng(
                 newWeatherData.latlng
             )
             mMap.moveCamera(cu)
+            marker.addWeatherMarker(newWeatherData)
+
+        }
+
+        val searchLatLngObserve = Observer<LatLng> { newLatLng ->
+            // Update the UI, in this case, a TextView.
+            Log.d("searchLatLngObserve", "latitude: " + newLatLng.latitude.toString())
+            Log.d("searchLatLngObserve", "longitude: " + newLatLng.longitude.toString())
+
+            val cu = CameraUpdateFactory.newLatLng(
+                newLatLng
+            )
+            mMap.moveCamera(cu)
+            marker.addMarker(newLatLng)
+
+            //VMクラスへ渡す（いずれ自動化したい）
+            viewModel.setMapClickPos(newLatLng)
         }
 
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
-        viewModel.weatherStatus.observe(this, weatherObser)
+        viewModel.weatherStatus.observe(this, weatherObserve)
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.searchLatLng.observe(this, searchLatLngObserve)
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -108,16 +116,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         viewModel.geocoder = Geocoder(this, Locale.getDefault())
 
+        //マーカークラスにgooglemapを渡す
+        marker = WeatherMarker(mMap)
+
         mMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
             /**
              * mapをタップされた場所を取得
              */
             override fun onMapClick(latlng :LatLng) {
 
+                marker.addMarker(latlng)
+
                 //VMクラスへ渡す（いずれ自動化したい）
                 viewModel.setMapClickPos(latlng)
             }
         })
+
+
     }
 
 }

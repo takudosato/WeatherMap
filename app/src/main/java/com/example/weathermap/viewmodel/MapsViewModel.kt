@@ -24,24 +24,39 @@ class MapsViewModel( private val loginRepository: Repository): ViewModel() {
 
     lateinit var geocoder: Geocoder
 
+    lateinit var g_ll: LatLng
+
     val editorActionListener: TextView.OnEditorActionListener
 
+
+    val weatherStatus: MutableLiveData<WeatherData> by lazy {
+        MutableLiveData<WeatherData>()
+    }
+
+    val searchLatLng: MutableLiveData<LatLng> by lazy {
+        MutableLiveData<LatLng>()
+    }
+
     init {
+
         this.editorActionListener = TextView.OnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                 actionId == EditorInfo.IME_ACTION_DONE ||
                 event.action == KeyEvent.ACTION_DOWN ||
                 event.action == KeyEvent.KEYCODE_ENTER) {
-                //文字列化実行
-                geoLocate()
-            }
+                    //viewModelScope.launch(Dispatchers.IO) {
+                        //文字列化実行
+                        geoLocate()
+                    //}
+                }
+                //val latlng = LatLng(address.latitude.toDouble(), address.longitude.toDouble())
+                //searchLatLng.postValue(g_ll)
 
             false
         }
     }
 
     companion object {
-
         //検索TextEditの通知を受け取る
         @BindingAdapter("onEditorActionListener")
         fun bindOnEditorActionListener(editText: EditText, editorActionListener: TextView.OnEditorActionListener) {
@@ -49,19 +64,22 @@ class MapsViewModel( private val loginRepository: Repository): ViewModel() {
         }
     }
 
-    val weatherStatus: MutableLiveData<WeatherData> by lazy {
-        MutableLiveData<WeatherData>()
-    }
 
 
     fun geoLocate(): Boolean {
         Log.d("MapActivity", "geoLocate")
 
-        val list = geocoder.getFromLocationName(searchPlaceString, 1)
-        if (list.isNotEmpty() && list.size > 0) {
-            val address = list.get(0)
-            Log.d("geoLocate", "address: " + address.toString())
-        }
+            val list = geocoder.getFromLocationName(searchPlaceString, 1)
+            if (list.isNotEmpty() && list.size > 0) {
+                val address = list.get(0)
+                Log.d("geoLocate", "address: " + address.toString())
+
+                val latlng = LatLng(address.latitude.toDouble(), address.longitude.toDouble())
+                searchLatLng.postValue(latlng)
+            }
+
+
+
         return true
     }
 
