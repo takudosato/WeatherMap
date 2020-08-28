@@ -1,7 +1,7 @@
 package com.example.weathermap.data
 
 import com.google.android.gms.maps.model.LatLng
-import java.math.BigDecimal
+
 
 /**
  * 指定した箇所の天気情報を保持する
