@@ -22,21 +22,14 @@ class Repository {
      * @return
      */
     fun getWeather(latlng : LatLng) : WeatherData {
-        Log.d("getWeather", "1 " + latlng.latitude.toString())
-        Log.d("getWeather", "2 " + latlng.longitude.toString())
+        Log.d("getWeather", "latitude: " + latlng.latitude.toString())
+        Log.d("getWeather", "longitude: " + latlng.longitude.toString())
 
+        //WebAPIにアクセスし、情報を取得
         val owmap = OpenWeatherMapAccess()
+
+        //天気情報をデータクラスに格納し、返す
         return owmap.getWeatherInfobyLatLng(latlng)
     }
-
-    companion object {
-        private var instance: Repository? = null
-
-        fun getInstance(): Repository =
-            instance ?: synchronized(this) {
-                instance ?: Repository().also { instance = it }
-            }
-    }
-
 
 }

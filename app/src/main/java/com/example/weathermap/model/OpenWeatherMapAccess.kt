@@ -1,6 +1,5 @@
 package com.example.weathermap.model
 
-import android.R.attr
 import android.util.Log
 import com.example.weathermap.data.WeatherData
 import com.google.android.gms.maps.model.LatLng
@@ -17,6 +16,9 @@ import java.net.URL
 
 class OpenWeatherMapAccess {
 
+    /**
+     * 位置情報の天気情報を返す
+     */
     fun getWeatherInfobyLatLng(latlng: LatLng): WeatherData {
 
         //経度緯度からURLを作成
@@ -56,6 +58,9 @@ class OpenWeatherMapAccess {
         return URL(urlStr)
     }
 
+    /**
+     * APIから受け取ったデータをString型に変換する
+     */
     private fun is2String(stream: InputStream): String {
         val sb = StringBuilder()
 
@@ -78,6 +83,8 @@ class OpenWeatherMapAccess {
      */
     fun jsonPerse(data: String): WeatherData {
 
+        Log.d("jsonPerse", data)
+
         try {
             val rootJSON = JSONObject(data)
 
@@ -95,13 +102,9 @@ class OpenWeatherMapAccess {
             //name
             val name = rootJSON.getString("name")
             //温度
-            var doubletemp = rootJSON.getJSONObject("main").getString("temp").toDouble() - 273.15
+            val doubletemp = rootJSON.getJSONObject("main").getString("temp").toDouble() - 273.15
             var temp: BigDecimal = BigDecimal(doubletemp);
             temp = temp.setScale(1, RoundingMode.HALF_UP);
-
-
-            Log.i("天気", main)
-            Log.i("天気2", description)
 
             return WeatherData(LatLng(0.0,0.0), id, temp.toString(), main, description, icon, country, name)
 

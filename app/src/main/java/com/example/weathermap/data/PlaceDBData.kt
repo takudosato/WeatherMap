@@ -3,6 +3,9 @@ package com.example.weathermap.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/**
+ * DBにセットする情報をまとめるデータクラス
+ */
 @Entity
 data class PlaceDBData (
     @PrimaryKey(autoGenerate = true)

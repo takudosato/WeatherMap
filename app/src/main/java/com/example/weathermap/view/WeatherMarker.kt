@@ -9,9 +9,13 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
 class WeatherMarker(val mMap: GoogleMap) {
-    //地図上のマーカー
+
+    //地図上のマーカー情報
     var markeropt: Marker? = null
 
+    /**
+     * 天気マーカーを表示する
+     */
     fun addWeatherMarker(weatherdata: WeatherData) {
 
         //マーカーはひとつのみ表示なので、追加前に既存のマーカーを削除する
@@ -46,7 +50,6 @@ class WeatherMarker(val mMap: GoogleMap) {
 
     /**
      * マーカーを削除する
-     *
      */
     fun removeWeatherMarker() {
         markeropt?.remove()
@@ -95,8 +98,4 @@ class WeatherMarker(val mMap: GoogleMap) {
             return R.drawable.kumori
         }
     }
-
-
-
-
 }

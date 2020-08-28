@@ -15,47 +15,30 @@ import com.example.weathermap.model.Repository
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 class MapsViewModel( private val loginRepository: Repository): ViewModel() {
 
-    var searchPlaceString = ""
-
+    //位置情報取得クラス
     lateinit var geocoder: Geocoder
 
-    lateinit var g_ll: LatLng
-
+    //検索文字列とリスナ
+    var searchPlaceString = ""
     val editorActionListener: TextView.OnEditorActionListener
 
-
+    //---------------------------------------
+    // LiveData宣言
+    // 指定した場所の天気情報
     val weatherStatus: MutableLiveData<WeatherData> by lazy {
         MutableLiveData<WeatherData>()
     }
-
+    // 位置変更（WeatherAPIにアクセスする間に移動やマーカの表示を行うために使用する）
     val searchLatLng: MutableLiveData<LatLng> by lazy {
         MutableLiveData<LatLng>()
     }
 
-    init {
-
-        this.editorActionListener = TextView.OnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                actionId == EditorInfo.IME_ACTION_DONE ||
-                event.action == KeyEvent.ACTION_DOWN ||
-                event.action == KeyEvent.KEYCODE_ENTER) {
-                    //viewModelScope.launch(Dispatchers.IO) {
-                        //文字列化実行
-                        geoLocate()
-                    //}
-                }
-                //val latlng = LatLng(address.latitude.toDouble(), address.longitude.toDouble())
-                //searchLatLng.postValue(g_ll)
-
-            false
-        }
-    }
-
+    //------------------------------------------
+    // 検索文字列のデータバインディング
     companion object {
         //検索TextEditの通知を受け取る
         @BindingAdapter("onEditorActionListener")
@@ -63,11 +46,30 @@ class MapsViewModel( private val loginRepository: Repository): ViewModel() {
             editText.setOnEditorActionListener(editorActionListener)
         }
     }
+    /**
+     * 文字列入力時のDataBind
+     */
+    init {
+        //文字列検索EditTextで入力終了ボタンが押下された場合のリスナー
+        this.editorActionListener = TextView.OnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                actionId == EditorInfo.IME_ACTION_DONE ||
+                event.action == KeyEvent.ACTION_DOWN ||
+                event.action == KeyEvent.KEYCODE_ENTER) {
+                    //文字列から位置情報を取得する
+                    geoLocate()
+                }
 
+            false
+        }
+    }
 
-
+    /**
+     * 場所文字列から位置情報を取得する。
+     * 呼び出される環境に必要であるため、trueを返す
+     */
     fun geoLocate(): Boolean {
-        Log.d("MapActivity", "geoLocate")
+        Log.d("MapViewModel", "geoLocate")
 
             val list = geocoder.getFromLocationName(searchPlaceString, 1)
             if (list.isNotEmpty() && list.size > 0) {
@@ -78,13 +80,11 @@ class MapsViewModel( private val loginRepository: Repository): ViewModel() {
                 searchLatLng.postValue(latlng)
             }
 
-
-
         return true
     }
 
     /**
-     * タップされた位置を受け取る
+     * 指定の位置の天気情報を受け取り、メンバ変数に設定する
      */
     fun setMapClickPos(latlng : LatLng) {
         Log.d("latitude", latlng.latitude.toString())
@@ -100,7 +100,4 @@ class MapsViewModel( private val loginRepository: Repository): ViewModel() {
         }
     }
 
-    operator fun invoke(function: () -> MapsViewModel) {
-
-    }
 }

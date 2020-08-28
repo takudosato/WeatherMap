@@ -1,40 +1,30 @@
 package com.example.weathermap.view
 
-import android.content.SharedPreferences
-import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
-import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import android.widget.TextView.OnEditorActionListener
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.weathermap.R
 import com.example.weathermap.data.PlaceDBData
 import com.example.weathermap.data.WeatherData
 import com.example.weathermap.databinding.ActivityMapsBinding
-import com.example.weathermap.model.*
+import com.example.weathermap.model.PlaceDBDAO
+import com.example.weathermap.model.PlaceDatabase
+import com.example.weathermap.model.Repository
 import com.example.weathermap.viewmodel.MapsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.util.*
 
 
@@ -43,10 +33,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
 
     //ViewModelクラスのインスタンス　
-    //private val ahoaho: MapsViewModel by viewModels<MapsViewModel>()
     val viewModel = MapsViewModel(Repository())
 
-    lateinit private var marker: WeatherMarker
+    private lateinit var marker: WeatherMarker
 
     private lateinit var mSearchText: EditText
 
@@ -69,7 +58,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         constructPlaceDB()
 
         //検索文字列入力
-        mSearchText = findViewById<EditText>(R.id.input_sarch)
+        mSearchText = findViewById(R.id.input_sarch)
 
         ///////////////////////////////////////////////
         /**
@@ -181,8 +170,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         GlobalScope.launch() {
             withContext(Dispatchers.IO) {
                 val data = dao.getAll()
-                if(data.isEmpty()){
-                } else {
+                if(!data.isEmpty()){
                     val dbdata = data[0]
                     latLng = LatLng(
                         dbdata.latitude, dbdata.longitude
