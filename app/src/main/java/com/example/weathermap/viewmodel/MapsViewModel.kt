@@ -1,5 +1,6 @@
 package com.example.weathermap.viewmodel
 
+import android.content.Context
 import android.location.Geocoder
 import android.util.Log
 import android.view.KeyEvent
@@ -10,6 +11,7 @@ import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weathermap.data.PlaceDBData
 import com.example.weathermap.data.WeatherData
 import com.example.weathermap.model.Repository
 import com.google.android.gms.maps.model.LatLng
@@ -17,7 +19,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class MapsViewModel( private val loginRepository: Repository): ViewModel() {
+class MapsViewModel(context: Context): ViewModel() {
+
+    private val repository =  Repository(context)
 
     //位置情報取得クラス
     lateinit var geocoder: Geocoder
@@ -92,12 +96,20 @@ class MapsViewModel( private val loginRepository: Repository): ViewModel() {
 
         //Repositoryクラスの処理を、コルーチンで実行
         viewModelScope.launch(Dispatchers.IO) {
-            val wetherdata = loginRepository.getWeather(latlng)
+            val wetherdata = repository.getWeather(latlng)
             //データが空（取得に失敗）でなければ、パラメータに反映する
             if (wetherdata != WeatherData()) {
                 weatherStatus.postValue(wetherdata)
             }
         }
+    }
+
+    fun getPlaceDBData(): PlaceDBData {
+        return repository.getPlaceDBData()
+    }
+
+    fun insertDBPlaceData(data: PlaceDBData) {
+        repository.insertDBPlaceData(data)
     }
 
 }

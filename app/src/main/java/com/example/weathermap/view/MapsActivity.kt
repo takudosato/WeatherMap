@@ -34,7 +34,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
 
     //ViewModelクラスのインスタンス　
-    //val viewModel = MapsViewModel(Repository("test"))
     lateinit var repsitory: Repository
     lateinit var viewModel: MapsViewModel
 
@@ -54,8 +53,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //////////////////////////////////////////////
         //設定処理
-        repsitory = Repository(applicationContext)
-        viewModel  = MapsViewModel(repsitory)
+        viewModel  = MapsViewModel(applicationContext)
 
         //DataBindingの設定
         val binding: ActivityMapsBinding = DataBindingUtil.setContentView(this,
@@ -84,7 +82,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        mMap.setMinZoomPreference(4.0f)
+        mMap.setMinZoomPreference(3.0f)
         mMap.setMaxZoomPreference(16.0f)
 
         //Geocoder（住所と位置情報を繋ぐを宣言）
@@ -172,7 +170,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             //DB登録されている、位置情報を取得する(未登録の場合、)
             withContext(Dispatchers.IO) {
-                val data = repsitory.getPlaceDBData()
+                val data = viewModel.getPlaceDBData()
                 latLng = LatLng(
                     data.latitude, data.longitude
                 )
@@ -209,7 +207,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         GlobalScope.launch(Dispatchers.IO) {
 
             //DBに登録
-            repsitory.insertDBPlaceData(data)
+            viewModel.insertDBPlaceData(data)
         }
     }
 
