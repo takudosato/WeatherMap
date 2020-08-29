@@ -3,6 +3,7 @@ package com.example.weathermap.view
 import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -43,6 +44,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var db: PlaceDatabase
     private lateinit var dao: PlaceDBDAO
 
+    //文字列削除ボタン
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_maps)
@@ -68,8 +73,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             // Update the UI, in this case, a TextView.
             Log.d("weatherObser", newWeatherData.cityname)
 
-            val cu = CameraUpdateFactory.newLatLng(
-                newWeatherData.latlng
+            val zoom = mMap.getCameraPosition().zoom
+            val cu = CameraUpdateFactory.newLatLngZoom(
+                newWeatherData.latlng, zoom
             )
             mMap.moveCamera(cu)
             marker.addWeatherMarker(newWeatherData)
@@ -88,8 +94,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("searchLatLngObserve", "latitude: " + newLatLng.latitude.toString())
             Log.d("searchLatLngObserve", "longitude: " + newLatLng.longitude.toString())
 
-            val cu = CameraUpdateFactory.newLatLng(
-                newLatLng
+            val zoom = mMap.getCameraPosition().zoom //point
+            val cu = CameraUpdateFactory.newLatLngZoom(
+                newLatLng, zoom
             )
             mMap.moveCamera(cu)
             marker.addMarker(newLatLng)
@@ -209,6 +216,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             dao.deleteAll()
             dao.insert(data)
         }
+    }
+
+    /**
+     * 検索文字列の削除ボタン押下で、文字列を消去する
+     */
+    fun onClickDelete(view: View) {
+        mSearchText.setText("")
     }
 
 }

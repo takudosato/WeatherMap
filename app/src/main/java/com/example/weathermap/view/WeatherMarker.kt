@@ -68,9 +68,9 @@ class WeatherMarker(val mMap: GoogleMap) {
 
         //Thunderstorm
         if ( 200 <= weatherdata.id && weatherdata.id < 300) {
-            return R.drawable.ame
+            return R.drawable.kaminari
         }
-        //Drizzle
+        //Drizzle(霧雨)
         else if ( 300 <= weatherdata.id && weatherdata.id < 400) {
             return R.drawable.ame
         }
@@ -84,18 +84,24 @@ class WeatherMarker(val mMap: GoogleMap) {
         }
         //Atmosphere
         else if ( 700 <= weatherdata.id && weatherdata.id < 800) {
-            return R.drawable.kumori
+            return R.drawable.ame
         }
         //Clear
         else if ( weatherdata.id == 800) {
             return R.drawable.hare
         }
         //Clouds
-        else if ( 801 <= weatherdata.id && weatherdata.id < 900) {
+        else if ( weatherdata.id == 801) {
+            return R.drawable.kumorihare
+        }
+        else if ( weatherdata.id == 802) {
             return R.drawable.kumori
         }
+        else if ( 803 <= weatherdata.id && weatherdata.id < 900) {
+            return R.drawable.kumorihare
+        }
         else {
-            return R.drawable.kumori
+            return R.drawable.kumorihare
         }
     }
 }
