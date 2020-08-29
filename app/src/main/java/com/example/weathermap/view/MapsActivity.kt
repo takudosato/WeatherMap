@@ -34,23 +34,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
 
     //ViewModelクラスのインスタンス　
-    val viewModel = MapsViewModel(Repository())
+    //val viewModel = MapsViewModel(Repository("test"))
+    lateinit var repsitory: Repository
+    lateinit var viewModel: MapsViewModel
 
+    //天気マーカーを表示するクラス
     private lateinit var marker: WeatherMarker
 
+    //検索文字列EditBox
     private lateinit var mSearchText: EditText
 
-    //DBアクセス
-    private lateinit var db: PlaceDatabase
-    private lateinit var dao: PlaceDBDAO
-
-    //文字列削除ボタン
-
-
-
+    /**
+     * OnCreate
+     *
+     * @param savedInstanceState
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_maps)
+
+        //////////////////////////////////////////////
+        //設定処理
+        repsitory = Repository(applicationContext)
+        viewModel  = MapsViewModel(repsitory)
 
         //DataBindingの設定
         val binding: ActivityMapsBinding = DataBindingUtil.setContentView(this,
@@ -59,12 +64,58 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.vm = viewModel
         binding.lifecycleOwner = this
 
-        //データベースアクセス構築
-        constructPlaceDB()
-
         //検索文字列入力
         mSearchText = findViewById(R.id.input_sarch)
 
+        //LiveData登録
+        setLiveData()
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    /**
+     * Googlemap初期化処理
+     *
+     * @param googleMap
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        mMap.setMinZoomPreference(4.0f)
+        mMap.setMaxZoomPreference(16.0f)
+
+        //Geocoder（住所と位置情報を繋ぐを宣言）
+        viewModel.geocoder = Geocoder(this, Locale.getDefault())
+
+        //マーカークラスにgooglemapを渡す
+        marker = WeatherMarker(mMap)
+
+        //初期カメラ設定
+        initCameraPos()
+
+        mMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
+            /**
+             * mapをタップされた場所を取得
+             */
+            override fun onMapClick(latlng :LatLng) {
+
+                // 取り急ぎ、マーカーを表示
+                marker.addMarker(latlng)
+
+                //VMクラスへ渡す（いずれ自動化したい）
+                viewModel.setMapClickPos(latlng)
+            }
+        })
+    }
+
+    /**
+     * LiveDataを登録する
+     *
+     */
+    private fun setLiveData() {
         ///////////////////////////////////////////////
         /**
          * ViewModelの天気情報が更新された時の処理
@@ -98,8 +149,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val cu = CameraUpdateFactory.newLatLngZoom(
                 newLatLng, zoom
             )
-            mMap.moveCamera(cu)
-            marker.addMarker(newLatLng)
 
             //VMクラスへ渡す（いずれ自動化したい）
             viewModel.setMapClickPos(newLatLng)
@@ -109,61 +158,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //LiveDataのObserver登録
         viewModel.weatherStatus.observe(this, weatherObserve)
         viewModel.searchLatLng.observe(this, searchLatLngObserve)
-
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-
-    }
-
-    /**
-     * DBを構築する
-     *
-     */
-    private fun constructPlaceDB() {
-        this.db = Room.databaseBuilder(
-            applicationContext,
-            PlaceDatabase::class.java,
-            "place.db"
-        ).build()
-        this.dao = this.db.placeDbDAO()
-    }
-
-    /**
-     * Googlemap初期化処理
-     *
-     * @param googleMap
-     */
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-
-
-        mMap.setMinZoomPreference(4.0f)
-        mMap.setMaxZoomPreference(16.0f)
-
-        viewModel.geocoder = Geocoder(this, Locale.getDefault())
-
-        //マーカークラスにgooglemapを渡す
-        marker = WeatherMarker(mMap)
-
-        //初期カメラ設定
-        initCameraPos()
-
-        mMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
-            /**
-             * mapをタップされた場所を取得
-             */
-            override fun onMapClick(latlng :LatLng) {
-
-                // 取り急ぎ、マーカーを表示
-                marker.addMarker(latlng)
-
-                //VMクラスへ渡す（いずれ自動化したい）
-                viewModel.setMapClickPos(latlng)
-            }
-        })
     }
 
     /**
@@ -171,20 +165,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      *
      */
     private fun initCameraPos() {
-        var latLng = LatLng(35.592061, 139.736607)
-        var zoom = 10F
+        lateinit var latLng: LatLng
+        var zoom: Float = 0F //プリミティブ型
 
         GlobalScope.launch() {
+
+            //DB登録されている、位置情報を取得する(未登録の場合、)
             withContext(Dispatchers.IO) {
-                val data = dao.getAll()
-                if(!data.isEmpty()){
-                    val dbdata = data[0]
-                    latLng = LatLng(
-                        dbdata.latitude, dbdata.longitude
-                    )
-                    zoom = dbdata.zoom
-                }
+                val data = repsitory.getPlaceDBData()
+                latLng = LatLng(
+                    data.latitude, data.longitude
+                )
+                zoom = data.zoom
             }
+            //取得した位置情報を反映する
             withContext(Dispatchers.Main) {
                 val cu = CameraUpdateFactory.newLatLngZoom(
                     latLng, zoom
@@ -213,8 +207,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             mMap.getCameraPosition().zoom
         )
         GlobalScope.launch(Dispatchers.IO) {
-            dao.deleteAll()
-            dao.insert(data)
+
+            //DBに登録
+            repsitory.insertDBPlaceData(data)
         }
     }
 
