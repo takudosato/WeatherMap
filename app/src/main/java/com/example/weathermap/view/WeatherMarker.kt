@@ -11,7 +11,21 @@ import com.google.android.gms.maps.model.MarkerOptions
 class WeatherMarker(val mMap: GoogleMap) {
 
     //地図上のマーカー情報
-    var markeropt: Marker? = null
+    private var markeropt: Marker? = null
+
+    companion object {
+
+        @Volatile private var instance: WeatherMarker? = null
+
+        fun getInstance(mMap: GoogleMap): WeatherMarker =
+            when {
+                instance != null -> instance!!
+                else -> synchronized(this) {
+                    if (instance == null) instance = WeatherMarker(mMap)
+                    instance!!
+                }
+            }
+    }
 
     /**
      * 天気マーカーを表示する
@@ -51,7 +65,7 @@ class WeatherMarker(val mMap: GoogleMap) {
     /**
      * マーカーを削除する
      */
-    fun removeWeatherMarker() {
+    private fun removeWeatherMarker() {
         markeropt?.remove()
         markeropt = null
     }
@@ -62,7 +76,7 @@ class WeatherMarker(val mMap: GoogleMap) {
      * @param weatherdata
      * @return
      */
-    fun getIconID(weatherdata: WeatherData) : Int  {
+    private fun getIconID(weatherdata: WeatherData) : Int  {
 
         // https://openweathermap.org/weather-conditions
 

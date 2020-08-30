@@ -81,7 +81,7 @@ class OpenWeatherMapAccess {
      *
      * @param data
      */
-    fun jsonPerse(data: String): WeatherData {
+    private fun jsonPerse(data: String): WeatherData {
 
         Log.d("jsonPerse", data)
 

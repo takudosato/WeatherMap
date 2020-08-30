@@ -104,10 +104,16 @@ class MapsViewModel(context: Context): ViewModel() {
         }
     }
 
+    /**
+     * DBの位置情報を取得
+     */
     fun getPlaceDBData(): PlaceDBData {
         return repository.getPlaceDBData()
     }
 
+    /**
+     * DBに位置情報を登録
+     */
     fun insertDBPlaceData(data: PlaceDBData) {
         repository.insertDBPlaceData(data)
     }

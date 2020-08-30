@@ -8,14 +8,10 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.room.Room
 import com.example.weathermap.R
 import com.example.weathermap.data.PlaceDBData
 import com.example.weathermap.data.WeatherData
 import com.example.weathermap.databinding.ActivityMapsBinding
-import com.example.weathermap.model.PlaceDBDAO
-import com.example.weathermap.model.PlaceDatabase
-import com.example.weathermap.model.Repository
 import com.example.weathermap.viewmodel.MapsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -34,7 +30,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
 
     //ViewModelクラスのインスタンス　
-    lateinit var repsitory: Repository
     lateinit var viewModel: MapsViewModel
 
     //天気マーカーを表示するクラス
@@ -89,7 +84,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel.geocoder = Geocoder(this, Locale.getDefault())
 
         //マーカークラスにgooglemapを渡す
-        marker = WeatherMarker(mMap)
+        marker = WeatherMarker.getInstance(mMap)
 
         //初期カメラ設定
         initCameraPos()
@@ -143,11 +138,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("searchLatLngObserve", "latitude: " + newLatLng.latitude.toString())
             Log.d("searchLatLngObserve", "longitude: " + newLatLng.longitude.toString())
 
-            val zoom = mMap.getCameraPosition().zoom //point
-            val cu = CameraUpdateFactory.newLatLngZoom(
-                newLatLng, zoom
-            )
-
             //VMクラスへ渡す（いずれ自動化したい）
             viewModel.setMapClickPos(newLatLng)
         }
@@ -196,8 +186,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     fun insertPlaceDB(latlng: LatLng) {
 
-        Log.d("MapsActivity", "insertPlaceDB----------------------------------")
-
         //位置情報とzooom情報を登録
         val data = PlaceDBData(0,
             latlng.latitude,
@@ -205,7 +193,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             mMap.getCameraPosition().zoom
         )
         GlobalScope.launch(Dispatchers.IO) {
-
             //DBに登録
             viewModel.insertDBPlaceData(data)
         }
