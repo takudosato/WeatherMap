@@ -8,29 +8,16 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
-class WeatherMarker(val mMap: GoogleMap) {
+class WeatherMarker() {
 
     //地図上のマーカー情報
     private var markeropt: Marker? = null
 
-    companion object {
-
-        @Volatile private var instance: WeatherMarker? = null
-
-        fun getInstance(mMap: GoogleMap): WeatherMarker =
-            when {
-                instance != null -> instance!!
-                else -> synchronized(this) {
-                    if (instance == null) instance = WeatherMarker(mMap)
-                    instance!!
-                }
-            }
-    }
 
     /**
      * 天気マーカーを表示する
      */
-    fun addWeatherMarker(weatherdata: WeatherData) {
+    fun addWeatherMarker(mMap: GoogleMap, weatherdata: WeatherData) {
 
         //マーカーはひとつのみ表示なので、追加前に既存のマーカーを削除する
         removeWeatherMarker()
@@ -50,7 +37,7 @@ class WeatherMarker(val mMap: GoogleMap) {
      *
      * @param latlng
      */
-    fun addMarker(latlng: LatLng) {
+    fun addMarker(mMap: GoogleMap, latlng: LatLng) {
 
         //マーカーはひとつのみ表示なので、追加前に既存のマーカーを削除する
         removeWeatherMarker()
@@ -67,7 +54,6 @@ class WeatherMarker(val mMap: GoogleMap) {
      */
     private fun removeWeatherMarker() {
         markeropt?.remove()
-        markeropt = null
     }
 
     /**

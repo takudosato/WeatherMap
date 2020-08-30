@@ -84,7 +84,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel.geocoder = Geocoder(this, Locale.getDefault())
 
         //マーカークラスにgooglemapを渡す
-        marker = WeatherMarker.getInstance(mMap)
+        marker = WeatherMarker()
 
         //初期カメラ設定
         initCameraPos()
@@ -96,7 +96,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onMapClick(latlng :LatLng) {
 
                 // 取り急ぎ、マーカーを表示
-                marker.addMarker(latlng)
+                marker.addMarker(mMap, latlng)
 
                 //VMクラスへ渡す（いずれ自動化したい）
                 viewModel.setMapClickPos(latlng)
@@ -122,7 +122,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 newWeatherData.latlng, zoom
             )
             mMap.moveCamera(cu)
-            marker.addWeatherMarker(newWeatherData)
+            marker.addWeatherMarker(mMap, newWeatherData)
 
             //DBへ登録
             insertPlaceDB(newWeatherData.latlng)
