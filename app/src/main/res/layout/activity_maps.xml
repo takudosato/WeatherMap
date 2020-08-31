@@ -35,7 +35,7 @@
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:src="@drawable/ic_magnify" />
 
             <EditText
@@ -43,9 +43,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/ic_magnity"
+                android:layout_toEndOf="@+id/ic_magnity"
                 android:background="@null"
-                android:hint="都市名や住所を入力してください"
+                android:hint="@string/id_strhint"
                 android:imeOptions="actionSearch"
                 android:onEditorActionListener="@{vm.editorActionListener}"
                 android:selectAllOnFocus="true"
